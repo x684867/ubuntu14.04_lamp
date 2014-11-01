@@ -1,0 +1,43 @@
+#!/bin/bash
+#
+# installMySQLserver
+# (c) 2014 Sam Caldwell.  Public Domain.
+#
+# This script installs a local mysql server installation
+# with dynamically generated user/pass combo that is then
+# stored in /root/mysql.creds
+#
+BINDIP="127.0.0.1"
+USERNAME="u$(head -n100 /dev/urandom | tr -dc a-zA-Z0-9 | head -c 8)"
+PASSWORD="p$(head -n100 /dev/urandom | tr -dc a-zA-Z0-9 | head -c 8)"
+
+echo "USERNAME=$USERNAME" >> /root/mysql.creds
+echo "PASSWORD=$PASSWORD" >> /root/mysql.creds
+chown root: /root/mysql.creds
+chmod 0400 /root/mysql.creds
+
+echo "installing software..."
+apt-get install mysql-server -y || {
+    echo "error installing mysql server." 
+    exit 1
+}
+echo "configuring software..."
+echo "DROP DATABASE test;" | mysql &> /dev/null
+
+echo "CREATE USER $USERNAME@\`%\` IDENTIFIED BY '$PASSWORD'" | mysql
+echo "GRANT ALL PRIVILEGES ON *.* TO $USERNAME@\`%\`" | mysql
+echo "DELETE FROM mysql.db WHERE Db='test' OR Db='test\\_%'" | mysql
+echo "DELETE FROM mysql.user WHERE User='';" | mysql
+echo "DELETE FROM mysql.user WHERE User='root' AND Host NOT in ('localhost','127.0.0.1','::1');" | mysql
+
+echo "FLUSH PRIVILEGES" | mysql
+
+which ufw && [ -x /usr/bin/isUFWenabled ] && /usr/bin/isUFWenabled && {
+    echo "UFW installed and enabled.  configuring."
+    ufw insert 1 allow in from 127.0.0.0 to 127.0.0.0 port 3306
+    ufw insert 2 deny in from 0.0.0.0 to 0.0.0.0 port 3306
+    ufw status numbered
+}
+
+echo "done.  Credentials are in /root/mysql.creds"
+exit 0

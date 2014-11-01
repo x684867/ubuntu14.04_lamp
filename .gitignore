@@ -1,0 +1,6 @@
+tmp/
+crash.log
+.log
+.ssh
+id_rsa
+

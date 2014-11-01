@@ -1,0 +1,18 @@
+#!/bin/bash
+#
+# installLamp
+# (c) 2014 Sam Caldwell.  Public Domain.
+#
+# This script installs a LAMP stack with or without
+# a local mysql installation.
+#
+export DEBIAN_FRONTEND="noninteractive"
+
+error(){
+    echo "$1"
+    exit 1
+}
+apt-get update --fix-missing -y || error "failed during apt-get update"
+apt-get upgrade -y || error "failed during apt-get upgrade"
+apt-get install wget unzip apache2 php5 mysql-client php5-mysql -y --fix-missing || \
+    error "installation failed one or more packages."

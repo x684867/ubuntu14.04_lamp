@@ -12,6 +12,8 @@ ENV LOCAL_MYSQL_SERVER 1
 
 ADD files/installLamp /usr/bin/installLamp
 ADD files/installMySQLserver /usr/bin/installMySQLserver
+ADD files/startLamp /usr/bin/
+
 RUN /usr/bin/generateSelfSignedCert
 RUN /usr/bin/installLamp
 RUN [ "$LOCAL_MYSQL_SERVER" == "1" ] && /usr/bin/installMySQLserver 

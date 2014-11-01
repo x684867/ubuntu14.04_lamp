@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# startLamp
+# (c) 2014 Sam Caldwell.  Public Domain.
+#
+/etc/init.d/apache2 restart && \
+/etc/init.d/mysql start && \
+/bin/bash && \
+echo "All services started"

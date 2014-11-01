@@ -19,4 +19,4 @@ RUN [ "$LOCAL_MYSQL_SERVER" == "1" ] && /usr/bin/installMySQLserver
 EXPOSE 80
 
 #default command when docker image is run
-CMD ["/bin/bash"]
+CMD ["/usr/bin/startLamp"]
